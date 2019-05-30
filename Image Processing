@@ -1,0 +1,274 @@
+function varargout = assignment1(varargin)
+
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @assignment1_OpeningFcn, ...
+                   'gui_OutputFcn',  @assignment1_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DO NOT EDIT
+
+
+% --- Executes just before assignment1 is made visible.
+function assignment1_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to assignment1 (see VARARGIN)
+
+% Choose default command line output for assignment1
+handles.output = hObject;
+
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes assignment1 wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+
+% --- Outputs from this function are returned to the command line.
+function varargout = assignment1_OutputFcn(hObject, eventdata, handles) 
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
+
+% --- Executes on button press in pushbutton1.
+function pushbutton1_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%image1 and image 2 is variables
+global image1 image2
+
+[path1,userCance]=imgetfile();
+
+
+grayImage = imread(path1);
+% Get the dimensions of the image.  
+% numberOfColorBands should be = 1.
+[rows, columns, numberOfColorChannels] = size(grayImage);
+if numberOfColorChannels > 1
+	% It's not really gray scale like we expected - it's color.
+	% Convert it to gray scale by taking only the green channel.
+	%grayImage = grayImage(:, :, 2); % Take green channel.
+    msgbox(sprintf('Error'),'Error','You enter incorrect image');
+else
+    image1=imread(path1);
+axes(handles.axes1);
+image2=image1;
+imshow(image1);
+end
+
+%            end    
+
+
+% --- Executes on button press in pushbutton2.
+function pushbutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+imsave();
+%if user cancel image then userCancel hans 1 ELSE 0
+%filename is use for taking path of image that where the is image is saved
+%it is optional
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%-----------------FLIP----------
+global image1
+flipImage=fliplr(image1);
+imagesc(flipImage);
+%flip left to right 
+
+
+% --- Executes on button press in pushbutton4.
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%------------------------NEGATIVE------------------------
+
+global image1 image2
+NEGATIVE=imcomplement(image1);
+image2=NEGATIVE;
+axes(handles.axes1);
+imshow(NEGATIVE);
+
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%---------------CONTRAST------------------------
+
+ global image1 image2
+%A=mean(image1);
+%bb=imfinfo(image1);
+%bb=bb.BitDepth
+%disp(bb);
+
+
+image2=image1;
+[r, c,d] = size(image1);
+myimage=int32(image2);
+ sum2=sum(image1(:));
+sum1=0;
+X=r*c;
+sum2=sum2/X;
+
+
+
+
+for i=1:r
+  for j=1:c
+     
+   pixel=myimage(i,j);
+sum1=sum1+(sum2-pixel)^2;
+
+    
+  end
+
+end
+var=sum1/X;
+contrast=sqrt(double(var));
+disp(contrast);
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%----------------------THRESHOLDING----------
+ global image1 image2
+%A=mean(image1);
+
+[r, c,d] = size(image1);
+
+ sum2=sum(image1(:));
+
+
+X=r*c;
+sum2=sum2/X;
+
+image_thresholded = zeros(size(image1));
+
+
+for i=1:r
+    for j=1:c
+        pixel=image1(i,j);
+        if pixel<=sum2 , pixel=0.000000000; end
+        if pixel>sum2 , pixel=255; end
+      image_thresholded(i,j)=pixel;
+    end
+end
+
+
+im_thresh=mat2gray(image_thresholded);
+image2=im_thresh;
+%figure%,imshow(im_thresh);
+axes(handles.axes1);
+imshow(im_thresh);
+%title('thresholding');
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%    ------------------LOG TRANSFORMATION------
+
+global image1 image2
+f= zeros(size(image1));
+im=double(image1);
+[r, c,d] = size(image1);
+
+%constant value of c is 1
+C=1;
+
+ for i = 1:r
+            for j = 1:c
+                R=im(i,j);
+                f(i,j)=C*log10(1+R); 
+            end
+ end
+ 
+ im_log=mat2gray(f);
+ image2=im_log;
+ axes(handles.axes1);
+imshow(im_log);
+
+%imshow(f), figure, imshow(z);
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%-----------------CONTRAST STRETCHING-----------
+
+
+global image1 image2
+%i = image1(:,:,1);
+
+rtemp = min(image1);         % find the min. value of pixels in all the columns (row vector)
+rmin = min(rtemp);      % find the min. value of pixel in the image
+rtemp = max(image1);         % find the max. value of pixels in all the columns (row vector)
+rmax = max(rtemp);      % find the max. value of pixel in the image
+
+[r, c,d] = size(image1);
+f= zeros(size(image1));
+m = 255/(rmax - rmin);  % find the slope of line joining point (0,255) to (rmin,rmax)
+
+for i=1:r
+    for j=1:c
+        pixel=image1(i,j);
+        value=(pixel-rmin)*m;
+        f(i,j)=value;
+        
+    end
+    
+end
+
+f=mat2gray(f);
+image2=f;
+axes(handles.axes1); 
+imshow(f);
+
+
+% --- Executes on button press in pushbutton11.
+function pushbutton11_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%-------------------histogram-----------------
+global image1 image2
+imhist(image2);
+
+
